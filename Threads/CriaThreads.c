@@ -6,6 +6,7 @@
 // Guilherme Frare Clemente - RA:124349
 
 // Atividade 1
+// Crie 3 threads e faça as modificacoes solicitadas
 
 // Tamanho do vetor e tamanho do bloco para ser preenchido
 #define TAM_VETOR 3000

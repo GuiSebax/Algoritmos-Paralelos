@@ -1,24 +1,7 @@
-/* Aplica��o de Base: Calcula Produto Escalar utilizando programa��o convencional
-(sequencial). No produto escalar, um vetor v1 eh multiplicado por um vetor v2,
-por meio da multiplicacao de elemento a elemento, somando-se os resultados das
-multiplicacoes parciais, gerando um unico valor numerico. Matematicamaente, temos
-que ProdEsc=Somatoria de V1[i]*V2[i], para i=0 ateh i=n-1, para vetores V1 e V2
-com n elementos.
-
-Digite o codigo em C a seguir em um editor de texto e salve o arquivo com o
-seguinte nome:
-
-prodEscalar.c
-
-Depois, compile o programa em linha de comando da seguinte forma:
-
-cc prodEscalar.c -o prodEscalar
-
-E por fim execute da seguinte forma:
-
-./prodEscalar
-
-*/
+// ajustar este codigo para calcular multiplicacao matricial com multi-
+// plas threads, sendo Cmxp=Amxn*Bnxp. As matrizes A e B devem ser geradas aleatori-
+// amente e a matriz C deve ser calculada. Todas as matrizes devem ser mostradas no
+// video. Utilize uma thread para cada produto escalar linhaxcoluna */
 
 // Guilherme Frare Clemente RA:124349
 
@@ -30,7 +13,8 @@ E por fim execute da seguinte forma:
 
 #define MAX 10
 
-typedef struct  {
+typedef struct
+{
     int linha;
     int coluna;
     int (*A)[MAX];
@@ -39,11 +23,14 @@ typedef struct  {
     int n;
 } MatrizData;
 
-void geraMatriz(char *tipo, int mat[MAX][MAX], int linhas, int colunas){
+void geraMatriz(char *tipo, int mat[MAX][MAX], int linhas, int colunas)
+{
 
     printf("\n%s: \n", tipo);
-    for (int i = 0; i < linhas; i++){
-        for (int j = 0; j < colunas; j++){
+    for (int i = 0; i < linhas; i++)
+    {
+        for (int j = 0; j < colunas; j++)
+        {
             mat[i][j] = rand() % 10;
             printf("%4d", mat[i][j]);
         }
@@ -51,11 +38,13 @@ void geraMatriz(char *tipo, int mat[MAX][MAX], int linhas, int colunas){
     }
 }
 
-void *calculaElemento(void *ptr){
-    MatrizData *data = (MatrizData *) ptr;
+void *calculaElemento(void *ptr)
+{
+    MatrizData *data = (MatrizData *)ptr;
     printf("Thread inciciada  para calcular C[%d][%d]\n", data->linha, data->coluna);
     int soma = 0;
-    for (int k = 0; k < data->n; k++){
+    for (int k = 0; k < data->n; k++)
+    {
         soma += data->A[data->linha][k] * data->B[k][data->coluna];
     }
 
@@ -65,7 +54,8 @@ void *calculaElemento(void *ptr){
 
     return NULL;
 }
-int main(void) {
+int main(void)
+{
 
     int A[MAX][MAX], B[MAX][MAX], C[MAX][MAX];
     int m, n, p;
@@ -81,9 +71,11 @@ int main(void) {
     pthread_t threads[MAX][MAX];
     MatrizData data[MAX][MAX];
 
-    //Criando threads  para calcular cada elemento da matriz C
-    for (int i = 0; i < m; i++){
-        for (int j = 0; j < p; j++){
+    // Criando threads  para calcular cada elemento da matriz C
+    for (int i = 0; i < m; i++)
+    {
+        for (int j = 0; j < p; j++)
+        {
             data[i][j].linha = i;
             data[i][j].coluna = j;
             data[i][j].A = A;
@@ -94,16 +86,20 @@ int main(void) {
         }
     }
 
-    //Esperando threads terminarem 
-    for (int i = 0; i < m; i++){
-        for (int j = 0; j < p; j++){
+    // Esperando threads terminarem
+    for (int i = 0; i < m; i++)
+    {
+        for (int j = 0; j < p; j++)
+        {
             pthread_join(threads[i][j], NULL);
         }
     }
 
     printf("\nMatriz C: \n");
-    for (int i = 0; i < m; i++){
-        for (int j = 0; j < p; j++){
+    for (int i = 0; i < m; i++)
+    {
+        for (int j = 0; j < p; j++)
+        {
             printf("%4d", C[i][j]);
         }
         printf("\n");
@@ -111,8 +107,3 @@ int main(void) {
 
     return 0;
 }
-
-/* Desafio: ajustar este codigo para calcular multiplicacao matricial com multi-
-plas threads, sendo Cmxp=Amxn*Bnxp. As matrizes A e B devem ser geradas aleatori-
-amente e a matriz C deve ser calculada. Todas as matrizes devem ser mostradas no
-video. Utilize uma thread para cada produto escalar linhaxcoluna */

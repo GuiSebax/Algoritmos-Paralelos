@@ -4,6 +4,7 @@
 #include <pthread.h>
 
 // Guilherme Frare Clemente RA:124349
+// MergeSort versão Multithread
 
 #define maxVet 10000
 #define maxNumero 10000
@@ -12,7 +13,8 @@ typedef int tipoVetor[maxVet];
 
 tipoVetor A;
 
-typedef struct {
+typedef struct
+{
     tipoVetor *V;
     int inicio;
     int fim;
@@ -43,7 +45,7 @@ void geraVetor(tipoVetor V, int tam)
     {
         V[i] = rand() % maxNumero;
         sinal = (rand() % 2) * 2 - 1; // se rand%2==0, sinal=-1; se rand%2==1, sinal=+1
-        V[i] = sinal * V[i];         // impoe o sinal no numero
+        V[i] = sinal * V[i];          // impoe o sinal no numero
     }
 }
 

@@ -6,6 +6,8 @@
 
 // Guilherme Frare Clemente - RA:124349
 
+// Multiplicação de matrizes com MPI_Bcast
+
 #define maxNumero 10 /* valor limite dos elementos das matrizes */
 
 /* o tipo matriz eh apenas um tipo ponteiro, que apontara
@@ -20,39 +22,44 @@ tipoMatriz A, B, C; /* A*B=C */
 
 int mA, nA, mB, nB, mC, nC;
 
-struct { int mA, nA, nB;
+struct
+{
+  int mA, nA, nB;
 } dimensoes;
 
 void leDim(int np, int *nlA, int *ncA, int *nlB, int *ncB)
-{   int tam;
+{
+  int tam;
 
   printf("\nLeitura das Dimensoes das Matrizes A e B:\n");
 
-    do
-    { printf("\nDigite o numero de linhas da matriz A");
-      printf("\nDeve ser multiplo do numero de processos %d",np);
-      printf("\n> ");
-      scanf("%d", nlA);
-    } while ((*nlA<1)||(((*nlA)%np)!=0));
+  do
+  {
+    printf("\nDigite o numero de linhas da matriz A");
+    printf("\nDeve ser multiplo do numero de processos %d", np);
+    printf("\n> ");
+    scanf("%d", nlA);
+  } while ((*nlA < 1) || (((*nlA) % np) != 0));
 
-    do
-    { printf("\nDigite o numero de colunas da matriz A");
-      printf("\nDeve ser > 0");
-      printf("\n> ");
-      scanf("%d", ncA);
-    } while (*ncA<1);
+  do
+  {
+    printf("\nDigite o numero de colunas da matriz A");
+    printf("\nDeve ser > 0");
+    printf("\n> ");
+    scanf("%d", ncA);
+  } while (*ncA < 1);
 
-    printf("\nAtencao!: O numero de colunas de A eh igual");
-    printf("\n          ao numero de linhas de B!");
-    *nlB=*ncA;
+  printf("\nAtencao!: O numero de colunas de A eh igual");
+  printf("\n          ao numero de linhas de B!");
+  *nlB = *ncA;
 
-    do
-    { printf("\nDigite o numero de colunas da matriz B");
-      printf("\nDeve ser > 0");
-      printf("\n> ");
-      scanf("%d", ncB);
-    } while (*ncB<1);
-
+  do
+  {
+    printf("\nDigite o numero de colunas da matriz B");
+    printf("\nDeve ser > 0");
+    printf("\n> ");
+    scanf("%d", ncB);
+  } while (*ncB < 1);
 }
 
 /*
@@ -70,13 +77,13 @@ void leDim(int np, int *nlA, int *ncA, int *nlB, int *ncB)
 
 int converteCoordenadasMV(int lin, int col, int nc)
 {
-  return (lin*nc+col);
+  return (lin * nc + col);
 }
 
 void converteCoordenadasVM(int pos, int nc, int *lin, int *col)
 {
-  (*lin)= pos/nc;
-  (*col)= pos%nc;
+  (*lin) = pos / nc;
+  (*col) = pos % nc;
 }
 
 /* faz a geracao aleatoria das matrizes A e B, de acordo com
@@ -85,65 +92,68 @@ void converteCoordenadasVM(int pos, int nc, int *lin, int *col)
    */
 
 void geraMatrizes(tipoMatriz A, tipoMatriz B, int mA, int nA, int nB)
-{   int i, sinal;
+{
+  int i, sinal;
 
-    srand(time(NULL));
+  srand(time(NULL));
 
-    printf("\nGeracao Aleatoria da Matriz A\n");
+  printf("\nGeracao Aleatoria da Matriz A\n");
 
-    for (i=0; i<(mA*nA); i++)
-    {
-      A[i]=rand()%maxNumero; /* % retorna o resto da divisao inteira */
-      sinal=(rand()%2)*2-1;  /* se rand%2==0, sinal=-1;
-                                 se rand%2==1, sinal=+1 */
+  for (i = 0; i < (mA * nA); i++)
+  {
+    A[i] = rand() % maxNumero;    /* % retorna o resto da divisao inteira */
+    sinal = (rand() % 2) * 2 - 1; /* se rand%2==0, sinal=-1;
+                                      se rand%2==1, sinal=+1 */
 
-      A[i]=sinal*A[i];  /* imp�e o sinal no n�mero */
-    }
+    A[i] = sinal * A[i]; /* imp�e o sinal no n�mero */
+  }
 
-    mB=nA;
-    for (i=0; i<(mB*nB); i++)
-    {
-      B[i]=rand()%maxNumero; /* % retorna o resto da divisao inteira */
-      sinal=(rand()%2)*2-1;  /* se rand%2==0, sinal=-1;
-                                 se rand%2==1, sinal=+1 */
+  mB = nA;
+  for (i = 0; i < (mB * nB); i++)
+  {
+    B[i] = rand() % maxNumero;    /* % retorna o resto da divisao inteira */
+    sinal = (rand() % 2) * 2 - 1; /* se rand%2==0, sinal=-1;
+                                      se rand%2==1, sinal=+1 */
 
-      B[i]=sinal*B[i];  /* imp�e o sinal no n�mero */
-    }
+    B[i] = sinal * B[i]; /* imp�e o sinal no n�mero */
+  }
 }
 
 /* mostra a matriz na tela do computador */
 
 void mostraMatriz(char *id, tipoMatriz M, int m, int n)
-{   int lin, col, k;
+{
+  int lin, col, k;
 
-    printf("\nElementos da Matriz %s:\n", id);
-    k=0;
-    for (lin=0; lin<m; lin++)
+  printf("\nElementos da Matriz %s:\n", id);
+  k = 0;
+  for (lin = 0; lin < m; lin++)
+  {
+    for (col = 0; col < n; col++)
     {
-      for (col=0; col<n; col++)
-      {
-        printf("%6d",M[k]);
-        k++;
-      }
-      printf("\n");
+      printf("%6d", M[k]);
+      k++;
     }
     printf("\n");
+  }
+  printf("\n");
 }
 
 int main(int argc, char *argv[])
-{ int id, np, i, lin, col, k, proc, pos, tag=1, nlpp, prod;
+{
+  int id, np, i, lin, col, k, proc, pos, tag = 1, nlpp, prod;
 
   MPI_Status st;
-  MPI_Init(&argc,&argv);
-  MPI_Comm_rank(MPI_COMM_WORLD,&id); /* retotna o id do processo */
-  MPI_Comm_size(MPI_COMM_WORLD,&np); /* retorna o numero de processos */
+  MPI_Init(&argc, &argv);
+  MPI_Comm_rank(MPI_COMM_WORLD, &id); /* retotna o id do processo */
+  MPI_Comm_size(MPI_COMM_WORLD, &np); /* retorna o numero de processos */
 
-  if(id == 0)
+  if (id == 0)
   { /* processo 0 le a dimensao das matrizes A e B e envia
        para os demais processos o numero de linhas de A por processo,
        bem como a matriz B completa */
 
-    leDim(np,&mA, &nA, &mB, &nB);
+    leDim(np, &mA, &nA, &mB, &nB);
 
     mC = mA;
     nC = nB;

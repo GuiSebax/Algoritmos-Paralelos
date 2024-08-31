@@ -8,11 +8,12 @@
 #define maxNumero 10000
 #define maxThread 300
 
-
 // Guilherme Frare Clemente RA:124349
+// Produtor-Consumidor com Mutex e Semáforos
 
-typedef struct {
-    int buffer[maxBuffer]; // local de armazenamento circular
+typedef struct
+{
+    int buffer[maxBuffer];   // local de armazenamento circular
     int in, out, count, tam; // posicoes e contadores
 } tBuffer;
 
@@ -26,7 +27,8 @@ pthread_mutex_t outMutex = PTHREAD_MUTEX_INITIALIZER;
 sem_t empty, full;
 
 // inicializa a estrutura do buffer
-void criaBuffer(int tam) {
+void criaBuffer(int tam)
+{
     buffer.in = 0;
     buffer.out = 0;
     buffer.count = 0;
@@ -34,7 +36,8 @@ void criaBuffer(int tam) {
 }
 
 // deposita o dado no buffer
-void deposita(int dado) {
+void deposita(int dado)
+{
     sem_wait(&empty);
     pthread_mutex_lock(&inMutex);
 
@@ -47,7 +50,8 @@ void deposita(int dado) {
 }
 
 // retira o dado do buffer
-void retira(int *dado) {
+void retira(int *dado)
+{
     sem_wait(&full);
     pthread_mutex_lock(&outMutex);
 
@@ -60,7 +64,8 @@ void retira(int *dado) {
 }
 
 // lista os elementos do buffer
-void mostraBuffer(void) {
+void mostraBuffer(void)
+{
     int in, out;
 
     in = buffer.in;
@@ -72,14 +77,16 @@ void mostraBuffer(void) {
 
     printf("\nElementos Restantes no Buffer: ");
 
-    while (out != in) {
+    while (out != in)
+    {
         printf("%d, ", buffer.buffer[out]);
         out = (out + 1) % buffer.tam;
     }
 }
 
 // simula trabalho da thread com tempo "aleatorio"
-void trabalha(void) {
+void trabalha(void)
+{
     int i, j, n, m;
     double soma;
 
@@ -96,17 +103,20 @@ void trabalha(void) {
 }
 
 // codigo da thread produtora
-void *produtor(void *ptr) {
+void *produtor(void *ptr)
+{
     int *id = (int *)ptr;
     int dado, sinal;
 
     srand(time(NULL));
 
-    while (1) {
+    while (1)
+    {
         trabalha();
 
         pthread_mutex_lock(&inMutex);
-        if (nProd <= 0) {
+        if (nProd <= 0)
+        {
             pthread_mutex_unlock(&inMutex);
             break;
         }
@@ -129,15 +139,18 @@ void *produtor(void *ptr) {
 }
 
 // codigo da thread consumidora
-void *consumidor(void *ptr) {
+void *consumidor(void *ptr)
+{
     int *id = (int *)ptr;
     int dado;
 
-    while (1) {
+    while (1)
+    {
         trabalha();
 
         pthread_mutex_lock(&outMutex);
-        if (nCons <= 0) {
+        if (nCons <= 0)
+        {
             pthread_mutex_unlock(&outMutex);
             break;
         }
@@ -154,14 +167,17 @@ void *consumidor(void *ptr) {
 }
 
 // codigo da thread primaria, principal
-int main() {
+int main()
+{
     pthread_t tProd[maxThread], tCons[maxThread];
     int iretProd[maxThread], iretCons[maxThread], tp[maxThread], tc[maxThread], resp, i, pindex, cindex, tam;
 
-    do {
+    do
+    {
         printf("\nProblema do Produtor-Consumidor Multithreaded\n");
 
-        do {
+        do
+        {
             printf("\nQual o tamanho util do buffer? (max = %d) => ", maxBuffer);
             scanf("%d", &(tam));
         } while ((tam < 1) || (tam > maxBuffer));
@@ -171,7 +187,8 @@ int main() {
         sem_init(&empty, 0, tam);
         sem_init(&full, 0, 0);
 
-        do {
+        do
+        {
             printf("\nQuantas threads produtoras? (max=%d) => ", maxThread - 1);
             scanf("%d", &ntp);
         } while ((ntp < 1) || (ntp >= maxThread));
@@ -179,7 +196,8 @@ int main() {
         for (i = 0; i < ntp; i++)
             tp[i] = i;
 
-        do {
+        do
+        {
             printf("\nQuantas threads consumidoras? (max=%d) => ", maxThread - ntp);
             scanf("%d", &ntc);
         } while ((ntc < 1) || (ntp + ntc > maxThread));
@@ -187,7 +205,8 @@ int main() {
         for (i = 0; i < ntc; i++)
             tc[i] = i;
 
-        do {
+        do
+        {
             printf("\nQuantas producoes deseja? => ");
             scanf("%d", &nProd);
         } while (nProd < 1);
@@ -196,13 +215,16 @@ int main() {
 
         pindex = 0;
         cindex = 0;
-        do {
-            if (pindex < ntp) {
+        do
+        {
+            if (pindex < ntp)
+            {
                 iretProd[pindex] = pthread_create(&tProd[pindex], NULL, produtor, (void *)&tp[pindex]);
                 pindex++;
             }
 
-            if (cindex < ntc) {
+            if (cindex < ntc)
+            {
                 iretCons[cindex] = pthread_create(&tCons[cindex], NULL, consumidor, (void *)&tc[cindex]);
                 cindex++;
             }

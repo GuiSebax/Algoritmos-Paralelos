@@ -3,6 +3,8 @@
 #include <time.h>
 #include <mpi.h>
 
+// Multiplicação de matrizes com MPI
+
 #define MAX_NUM 1000
 
 typedef int **Matrix;

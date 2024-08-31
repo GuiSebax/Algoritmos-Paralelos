@@ -9,12 +9,14 @@
 
 // Guilherme Frare Clemente RA:124349
 
-typedef struct {
+// Problema do Produtor-Consumidor com Mutex
+typedef struct
+{
     int buffer[maxBuffer]; // local de armazenamento circular
-    int in,     // posicao de insercao
-        out,    // posicao de retirada
-        count,  // quantidade de elementos no buffer
-        tam;    // tamanho util do buffer
+    int in,                // posicao de insercao
+        out,               // posicao de retirada
+        count,             // quantidade de elementos no buffer
+        tam;               // tamanho util do buffer
     pthread_mutex_t mutex; // mutex para o buffer
 } tBuffer;
 
@@ -103,21 +105,21 @@ void trabalha(void)
     int i, j, n, m;
     double soma;
 
-/*
-  trecho de codigo que simula o consumo de tempo
-  de forma parcialmente aleatoria. Teste retirar
-  o codigo do comentario(ativar o codigo).
+    /*
+      trecho de codigo que simula o consumo de tempo
+      de forma parcialmente aleatoria. Teste retirar
+      o codigo do comentario(ativar o codigo).
 
-  srand(time(NULL));
-  n = 1000+(rand()%1000);
-  m = 5000+(rand()%5000);
-  soma = rand();
-  for (i=0; i<n; i++)
-    {   soma=((soma+(i*2)/2))*(rand()/soma);
-        for (j=0; j<m; j++)
-            soma=soma-rand()+soma;
-    }
-*/
+      srand(time(NULL));
+      n = 1000+(rand()%1000);
+      m = 5000+(rand()%5000);
+      soma = rand();
+      for (i=0; i<n; i++)
+        {   soma=((soma+(i*2)/2))*(rand()/soma);
+            for (j=0; j<m; j++)
+                soma=soma-rand()+soma;
+        }
+    */
 }
 
 // codigo da thread produtora

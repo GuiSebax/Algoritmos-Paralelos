@@ -3,7 +3,9 @@
 #include <pthread.h>
 #include <time.h>
 
-typedef struct {
+// Busca Elemento X no Vetor com k Threads
+typedef struct
+{
     int *vetor;
     int valor;
     int inicio;
@@ -11,11 +13,13 @@ typedef struct {
     int resultado;
 } argumentos;
 
-
-void *encontra_valor_thread(void *ptr) {
-    argumentos *args = (argumentos *) ptr;
-    for(int i = args->inicio; i < args->fim; i++){
-        if(args->vetor[i] == args->valor){
+void *encontra_valor_thread(void *ptr)
+{
+    argumentos *args = (argumentos *)ptr;
+    for (int i = args->inicio; i < args->fim; i++)
+    {
+        if (args->vetor[i] == args->valor)
+        {
             args->resultado = i;
             return NULL;
         }
@@ -24,12 +28,13 @@ void *encontra_valor_thread(void *ptr) {
     return NULL;
 }
 
-int main(void){
+int main(void)
+{
 
     int numthreads;
     printf("Digite o numero de threads: ");
     scanf("%d", &numthreads);
-    
+
     int tam;
     printf("Digite o tamanho do vetor: ");
     scanf("%d", &tam);
@@ -39,11 +44,13 @@ int main(void){
 
     int vetor[tam];
     srand(time(NULL));
-    for(int i = 0; i < tam; i++){
+    for (int i = 0; i < tam; i++)
+    {
         vetor[i] = rand() % 100;
     }
 
-    for(int i = 0; i < tam; i++){
+    for (int i = 0; i < tam; i++)
+    {
         printf("%d ", vetor[i]);
     }
 
@@ -56,29 +63,34 @@ int main(void){
     int divisao = tam / numthreads;
     int resto = tam % numthreads;
 
-    for(int i = 0; i < numthreads; i++) {
+    for (int i = 0; i < numthreads; i++)
+    {
         args[i].vetor = vetor;
         args[i].valor = valor;
         args[i].inicio = i * divisao;
         args[i].fim = (i + 1) * divisao;
-        if(i == numthreads - 1) {
+        if (i == numthreads - 1)
+        {
             args[i].fim += resto;
         }
         args[i].resultado = -1;
         pthread_create(&threads[i], NULL, encontra_valor_thread, &args[i]);
     }
 
-    int encontrado = -1;   
-    for(int i = 0; i < numthreads; i++) {
+    int encontrado = -1;
+    for (int i = 0; i < numthreads; i++)
+    {
         pthread_join(threads[i], NULL);
-        if(args[i].resultado != -1) {
+        if (args[i].resultado != -1)
+        {
             encontrado = args[i].resultado;
         }
     }
 
-    if(encontrado != -1) {
+    if (encontrado != -1)
+    {
         printf("Valor encontrado na posicao %d\n", encontrado);
-    } else
+    }
+    else
         printf("Valor nao encontrado\n");
-    
 }
